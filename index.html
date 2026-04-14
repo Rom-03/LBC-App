@@ -33,6 +33,19 @@
 
         body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; background-color: var(--light-bg); color: var(--text-main); line-height: 1.5; transition: background 0.3s; overflow-x: hidden; }
 
+        /* PRELOADER */
+        #preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--light-bg); z-index: 10000;
+            display: none; justify-content: center; align-items: center; flex-direction: column;
+        }
+        .loader-spinner {
+            width: 40px; height: 40px; border: 4px solid var(--border);
+            border-top: 4px solid var(--lbc-red); border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         /* LOGIN OVERLAY */
         #loginOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -100,12 +113,17 @@
         .hamburger { display: none; cursor: pointer; flex-direction: column; gap: 4px; background: none; border: none; padding: 5px; z-index: 1100; }
         .hamburger span { display: block; width: 22px; height: 2px; background: white; border-radius: 2px; transition: 0.3s; }
 
-        .sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--card-bg); z-index: 1050; transition: 0.3s; box-shadow: 10px 0 30px rgba(0,0,0,0.1); padding-top: 20px; }
+        .sidebar { position: fixed; top: 0; left: -250px; width: 250px; height: 100%; background: var(--card-bg); z-index: 1050; transition: 0.3s; box-shadow: 10px 0 30px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
         .sidebar.open { left: 0; }
+        .sidebar-header { background: var(--lbc-red); padding: 30px 20px; text-align: center; color: white; }
+        .side-logo { font-size: 1.8rem; font-weight: 900; letter-spacing: -1px; margin: 0; }
+        .side-tag { font-size: 0.65rem; opacity: 0.8; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
+        
         .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1040; display: none; backdrop-filter: blur(2px); }
-        .sidebar-links { list-style: none; padding: 0; margin-top: 60px; }
-        .sidebar-links li { padding: 18px 30px; font-weight: 700; font-size: 0.85rem; cursor: pointer; color: var(--text-main); border-bottom: 1px solid var(--border); }
-        .sidebar-links li.active { color: var(--lbc-red); background: rgba(227, 26, 44, 0.05); }
+        .sidebar-links { list-style: none; padding: 10px 0; margin: 0; flex: 1; overflow-y: auto; }
+        .sidebar-links li { padding: 12px 25px; font-weight: 700; font-size: 0.75rem; cursor: pointer; color: var(--text-main); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; transition: 0.2s; }
+        .sidebar-links li:hover { background: rgba(0,0,0,0.02); padding-left: 30px; }
+        .sidebar-links li.active { color: var(--lbc-red); background: rgba(227, 26, 44, 0.05); border-left: 4px solid var(--lbc-red); }
 
         .container { max-width: 1300px; margin: 20px auto; padding: 0 15px; }
         .page-section { display: none; }
@@ -141,13 +159,14 @@
         .inv-controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
         .filter-input { padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--input-bg); color: var(--text-main); min-width: 180px; font-family: inherit; }
         
-        .inv-counter-badge { 
+        .counter-group { display: flex; gap: 8px; }
+        .mini-stat-badge { 
             background: var(--card-bg); border: 1px solid var(--border); 
-            padding: 8px 15px; border-radius: 8px; font-size: 0.75rem; 
-            font-weight: 700; color: var(--text-muted);
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+            padding: 6px 12px; border-radius: 8px; font-size: 0.65rem; 
+            font-weight: 700; color: var(--text-muted); display: flex; flex-direction: column; align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03); min-width: 65px;
         }
-        .inv-counter-badge span { color: var(--lbc-red); font-weight: 800; font-size: 0.85rem; }
+        .mini-stat-badge span { color: var(--lbc-red); font-weight: 800; font-size: 0.9rem; line-height: 1.1; margin-top: 2px; }
 
         .btn-main { padding: 12px 24px; background: var(--lbc-red); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(227, 26, 44, 0.2); }
         .sync-alert { font-size: 0.7rem; font-weight: 800; color: #2e7d32; display: none; margin-left: 10px; background: #e8f5e9; padding: 4px 8px; border-radius: 4px; }
@@ -194,17 +213,6 @@
         .btn-submit { background: var(--lbc-red); color: white; }
         .btn-cancel { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
 
-        .att-badge { padding: 4px 10px; border-radius: 6px; font-weight: 800; font-size: 0.65rem; text-transform: uppercase; }
-        .att-in { background: #e8f5e9; color: #2e7d32; }
-        .att-out { background: #fff3e0; color: #ef6c00; }
-        .editable-cell { cursor: pointer; border-bottom: 1px dashed var(--text-muted); }
-
-        .notes-cell { max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-muted); font-style: italic; font-size: 0.75rem; }
-        .action-cell { display: flex; gap: 10px; align-items: center; justify-content: flex-end; height: 100%; min-height: 40px; }
-        .btn-icon { border:none; background:none; cursor:pointer; color:var(--text-muted); font-size: 1rem; transition: 0.2s; padding: 0; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; line-height: 1; }
-        .btn-icon:hover { color: var(--lbc-red); transform: scale(1.1); }
-
-        /* CONFIRMATION MODAL MINIMAL */
         .confirm-box {
             background: var(--card-bg); padding: 30px; border-radius: 20px;
             width: 90%; max-width: 340px; text-align: center;
@@ -222,14 +230,19 @@
             .nav-links { display: none; }
             .hamburger { display: flex; }
             .form-grid { grid-template-columns: 1fr; }
-            .form-group.full { grid-column: span 1; }
             .dash-visuals { grid-template-columns: 1fr; }
-            .inv-controls { flex-direction: column; align-items: stretch; width: 100%; }
-            .filter-input { min-width: 0; width: 100%; }
+            .action-bar { flex-direction: column; align-items: stretch; gap: 15px; }
+            .inv-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; margin-top: 5px; }
+            #inventorySearch, #locationSearch, #attendanceSearch { grid-column: span 2; }
         }
     </style>
 </head>
 <body data-theme="light">
+
+    <div id="preloader">
+        <div class="loader-spinner"></div>
+        <p style="margin-top: 15px; font-weight: 700; font-size: 0.8rem; color: var(--text-muted); letter-spacing: 1px;">INITIALIZING SYSTEM...</p>
+    </div>
 
     <div id="loginOverlay">
         <div class="login-box">
@@ -278,15 +291,19 @@
 
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
     <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="side-logo">LBC</div>
+            <div class="side-tag">IT Operations</div>
+        </div>
         <ul class="sidebar-links">
-            <li id="side-dashboard" onclick="showPage('dashboard'); toggleSidebar()">DASHBOARD</li>
-            <li id="side-inventory" onclick="showPage('inventory'); toggleSidebar()">INVENTORY</li>
-            <li id="side-locations" onclick="showPage('locations'); toggleSidebar()">LOCATIONS</li>
-            <li id="side-my-devices" onclick="showPage('my-devices'); toggleSidebar()">MY DEVICES</li>
-            <li id="side-attendance" onclick="showPage('attendance'); toggleSidebar()">MY ATTENDANCE</li>
-            <li onclick="exportData(); toggleSidebar()">💾 EXPORT DATA</li>
-            <li onclick="document.getElementById('importFile').click(); toggleSidebar()">📂 IMPORT DATA</li>
-            <li onclick="logout(); toggleSidebar()" style="color: var(--lbc-red); border-top: 2px solid var(--border); font-weight: 900;">LOGOUT</li>
+            <li id="side-dashboard" onclick="showPage('dashboard'); toggleSidebar()">🏠 Dashboard</li>
+            <li id="side-inventory" onclick="showPage('inventory'); toggleSidebar()">📦 Inventory</li>
+            <li id="side-locations" onclick="showPage('locations'); toggleSidebar()">📍 Locations</li>
+            <li id="side-my-devices" onclick="showPage('my-devices'); toggleSidebar()">💻 My Devices</li>
+            <li id="side-attendance" onclick="showPage('attendance'); toggleSidebar()">🕒 My Attendance</li>
+            <li onclick="exportData(); toggleSidebar()">💾 Export Backup</li>
+            <li onclick="document.getElementById('importFile').click(); toggleSidebar()">📂 Import Data</li>
+            <li onclick="logout(); toggleSidebar()" style="color: var(--lbc-red); border-top: 2px solid var(--border); font-weight: 900; margin-top: auto;">🚪 Logout</li>
         </ul>
     </div>
 
@@ -297,9 +314,8 @@
                     <h2 class="section-title">Field Intelligence</h2>
                 </div>
                 <div style="display: flex; gap: 10px;">
-                    <button class="btn-main" style="background: var(--primary);" onclick="exportData()">EXPORT BACKUP</button>
-                    <button class="btn-main" style="background: #576574;" onclick="document.getElementById('importFile').click()">IMPORT</button>
-                    <input type="file" id="importFile" style="display:none" accept=".json" onchange="importData(event)">
+                    <button class="btn-main" style="background: var(--primary);" onclick="exportData()">EXPORT</button>
+                    <button class="btn-main" style="background: #747d8c;" onclick="document.getElementById('importFile').click()">IMPORT</button>
                 </div>
             </div>
             
@@ -317,8 +333,8 @@
                     <div id="os-viz-container"></div>
                 </div>
                 <div class="viz-card">
-                    <h4>Top Site Readiness</h4>
-                    <div id="site-viz-container"></div>
+                    <h4>Device Type Distribution</h4>
+                    <div id="type-viz-container"></div>
                 </div>
             </div>
         </section>
@@ -332,14 +348,13 @@
                             <option value="">All Sites</option>
                         </select>
                         <input type="text" id="inventorySearch" class="filter-input" placeholder="Search keyword..." onkeyup="renderAll()">
-                        <div class="inv-counter-badge">
-                            DISPLAYED: <span id="filtered-count">0</span> / <span id="grand-total">0</span>
+                        <div class="counter-group">
+                            <div class="mini-stat-badge">SHOWN <span id="filtered-count">0</span></div>
+                            <div class="mini-stat-badge">OVERALL <span id="grand-total">0</span></div>
                         </div>
                     </div>
                 </div>
-                <div style="display: flex;">
-                    <button class="btn-main" onclick="openAssetWizard()">+ REGISTER ASSET</button>
-                </div>
+                <button class="btn-main" onclick="openAssetWizard()">+ REGISTER ASSET</button>
             </div>
             <div class="table-card">
                 <table>
@@ -353,7 +368,9 @@
             <div class="action-bar">
                 <div class="section-header-box">
                     <h2 class="section-title">Site Nodes</h2>
-                    <input type="text" id="locationSearch" class="filter-input" placeholder="Filter Sites..." onkeyup="renderAll()">
+                    <div class="inv-controls">
+                        <input type="text" id="locationSearch" class="filter-input" placeholder="Filter Sites..." onkeyup="renderAll()">
+                    </div>
                 </div>
                 <button class="btn-main" onclick="openLocationModal()">+ ADD SITE</button>
             </div>
@@ -395,13 +412,14 @@
                     <p>Employee Number: 138178</p>
                 </div>
             </div>
-
             <div class="action-bar">
                 <div class="section-header-box">
                     <h2 class="section-title">Biometric Backup</h2>
-                    <input type="text" id="attendanceSearch" class="filter-input" placeholder="Search Date..." onkeyup="renderAll()">
+                    <div class="inv-controls">
+                        <input type="text" id="attendanceSearch" class="filter-input" placeholder="Search Date..." onkeyup="renderAll()">
+                    </div>
                 </div>
-                <div style="display: flex; gap: 10px;">
+                <div style="display: flex; gap: 10px; width: 100%;">
                     <button class="btn-main" style="background: #2e7d32;" onclick="logAttendance('Time In')">TIME IN</button>
                     <button class="btn-main" style="background: #ef6c00;" onclick="logAttendance('Time Out')">TIME OUT</button>
                 </div>
@@ -507,6 +525,8 @@
         </div>
     </div>
 
+    <input type="file" id="importFile" style="display: none;" onchange="importData(event)">
+
     <script>
         const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxQ-xN1Vb7upwynavDyhDoZqHKgPgDm9E8inAF4aH9jbELjb8p4XnykDyRaNKNz77i7/exec";
 
@@ -516,110 +536,42 @@
         let myDevices = [];
         let syncTimer;
 
-        // IMPORT/EXPORT FUNCTIONS
-        function exportData() {
-            const dataStr = JSON.stringify({ inventory: assets, sites: locations, attendance, personalDevices: myDevices }, null, 2);
-            const blob = new Blob([dataStr], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = `LBC_FieldTracker_Backup_${new Date().toLocaleDateString()}.json`;
-            link.click();
-        }
-
-        function importData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    assets = data.inventory || [];
-                    locations = data.sites || [];
-                    attendance = data.attendance || [];
-                    myDevices = data.personalDevices || [];
-                    renderAll();
-                    triggerSync();
-                    alert("Data imported successfully!");
-                } catch (err) { alert("Invalid backup file."); }
-            };
-            reader.readAsText(file);
-        }
-
-        async function fetchOnlineData() {
-            const alertTag = document.getElementById('syncAlert');
-            alertTag.style.display = "inline";
-            alertTag.innerText = "⌛ LOADING...";
-            
-            try {
-                const response = await fetch(GOOGLE_SHEET_URL);
-                const data = await response.json();
-                
-                assets = data.inventory || [];
-                locations = data.sites || [];
-                attendance = data.attendance || [];
-                myDevices = data.personalDevices || [];
-                
-                renderAll();
-                alertTag.innerText = "☁ ONLINE";
-                setTimeout(() => alertTag.style.display = "none", 2000);
-            } catch (err) {
-                alertTag.innerText = "⚠ OFFLINE";
-                console.error("Load failed:", err);
-            }
-        }
-
-        async function runAutoSync() {
-            const alertTag = document.getElementById('syncAlert');
-            alertTag.style.display = "inline";
-            alertTag.innerText = "⌛ SYNCING...";
-            alertTag.style.background = "#fff3e0";
-            alertTag.style.color = "#ef6c00";
-
-            try {
-                const masterData = {
-                    inventory: assets,
-                    sites: locations,
-                    attendance: attendance,
-                    personalDevices: myDevices,
-                    lastUpdated: new Date().toLocaleString()
-                };
-
-                const formData = new FormData();
-                formData.append('data', JSON.stringify(masterData));
-
-                await fetch(GOOGLE_SHEET_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: formData
-                });
-
-                alertTag.innerText = "☁ SYNCED";
-                alertTag.style.background = "#e8f5e9";
-                alertTag.style.color = "#2e7d32";
-                setTimeout(() => { alertTag.style.display = "none"; }, 3000);
-            } catch (err) {
-                alertTag.innerText = "⚠ SYNC FAILED";
-                alertTag.style.background = "#ffebee";
-                alertTag.style.color = "#c62828";
-            }
-        }
-
-        function triggerSync() {
-            clearTimeout(syncTimer);
-            syncTimer = setTimeout(runAutoSync, 1500);
-        }
-
+        // AUTHENTICATION & SESSION PERSISTENCE
         function checkPin() {
             if(document.getElementById('pinInput').value === "1122") {
-                document.getElementById('loginOverlay').classList.add('hidden');
-                document.body.style.visibility = 'visible';
-                fetchOnlineData();
+                localStorage.setItem('lbc_session', 'true');
+                loginSuccess();
             } else { alert("Access Denied"); document.getElementById('pinInput').value = ""; }
         }
 
-        function logout() { location.reload(); }
+        function loginSuccess() {
+            document.getElementById('preloader').style.display = 'flex';
+            setTimeout(() => {
+                document.getElementById('loginOverlay').classList.add('hidden');
+                document.body.style.visibility = 'visible';
+                document.getElementById('preloader').style.display = 'none';
+                showPage('dashboard');
+                fetchOnlineData();
+            }, 800);
+        }
 
+        function logout() { 
+            localStorage.removeItem('lbc_session');
+            location.reload(); 
+        }
+
+        window.onload = () => {
+            if(localStorage.getItem('lbc_session') === 'true') {
+                document.getElementById('loginOverlay').style.display = 'none';
+                document.body.style.visibility = 'visible';
+                showPage('dashboard');
+                fetchOnlineData();
+            } else {
+                document.body.style.visibility = 'visible';
+            }
+        };
+
+        // UI & NAVIGATION
         function toggleTheme() {
             const current = document.body.getAttribute('data-theme');
             const target = current === 'light' ? 'dark' : 'light';
@@ -641,74 +593,86 @@
             renderAll();
         }
 
-        function logAttendance(type) {
-            const now = new Date();
-            attendance.unshift({
-                date: now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
-                time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                activity: type
-            });
-            renderAll();
-            triggerSync();
+        // DATA LOGIC
+        async function fetchOnlineData() {
+            const alertTag = document.getElementById('syncAlert');
+            if(alertTag) { alertTag.style.display = "inline"; alertTag.innerText = "⌛ LOADING..."; }
+            try {
+                const response = await fetch(GOOGLE_SHEET_URL);
+                const data = await response.json();
+                assets = data.inventory || []; locations = data.sites || [];
+                attendance = data.attendance || []; myDevices = data.personalDevices || [];
+                renderAll();
+                if(alertTag) { alertTag.innerText = "☁ ONLINE"; setTimeout(() => alertTag.style.display = "none", 2000); }
+            } catch (err) { if(alertTag) alertTag.innerText = "⚠ OFFLINE"; }
         }
 
-        function updateAttendance(idx, field, val) { 
-            attendance[idx][field] = val; 
-            triggerSync();
+        async function runAutoSync() {
+            const alertTag = document.getElementById('syncAlert');
+            if(alertTag) { alertTag.style.display = "inline"; alertTag.innerText = "⌛ SYNCING..."; }
+            try {
+                const masterData = { inventory: assets, sites: locations, attendance: attendance, personalDevices: myDevices };
+                const formData = new FormData();
+                formData.append('data', JSON.stringify(masterData));
+                await fetch(GOOGLE_SHEET_URL, { method: 'POST', mode: 'no-cors', body: formData });
+                if(alertTag) { alertTag.innerText = "☁ SYNCED"; setTimeout(() => { alertTag.style.display = "none"; }, 3000); }
+            } catch (err) { if(alertTag) alertTag.innerText = "⚠ SYNC FAILED"; }
         }
 
-        function filterBySite(n) { 
-            showPage('inventory'); 
-            document.getElementById('siteFilter').value = n;
-            document.getElementById('inventorySearch').value = "";
-            renderAll(); 
+        function triggerSync() { clearTimeout(syncTimer); syncTimer = setTimeout(runAutoSync, 1500); }
+
+        function exportData() {
+            const dataStr = JSON.stringify({ inventory: assets, sites: locations, attendance, personalDevices: myDevices }, null, 2);
+            const blob = new Blob([dataStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url; link.download = `LBC_FieldTracker_Backup_${new Date().toLocaleDateString()}.json`;
+            link.click();
         }
 
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    assets = data.inventory || []; locations = data.sites || [];
+                    attendance = data.attendance || []; myDevices = data.personalDevices || [];
+                    renderAll(); triggerSync(); alert("Data imported successfully!");
+                } catch (err) { alert("Invalid backup file."); }
+            };
+            reader.readAsText(file);
+        }
+
+        // RENDERING & ACTIONS
         function jumpTo(id) { document.getElementById('wizardBody').scrollTo({ top: document.getElementById(id).offsetTop - 100, behavior: 'smooth' }); }
-
+        
         function openAssetWizard(idx = -1) {
             const sel = document.getElementById('assetLocSelect');
             sel.innerHTML = locations.map(l => `<option value="${l.name}">${l.name}</option>`).join('') || '<option value="-">-</option>';
             document.getElementById('editAssetIndex').value = idx;
-            const currentFilter = document.getElementById('siteFilter').value;
-
             if(idx > -1) {
                 const a = assets[idx];
-                document.getElementById('assetName').value = a.name || ""; 
-                document.getElementById('assetType').value = a.type || "Desktop";
-                document.getElementById('assetSerial').value = a.serial || "";
-                document.getElementById('assetBrand').value = a.brand || ""; 
-                document.getElementById('assetModel').value = a.model || "";
-                document.getElementById('assetDate').value = a.date || ""; 
-                document.getElementById('assetStatus').value = a.status || "Active";
-                document.getElementById('assetIP').value = a.ip || ""; 
-                document.getElementById('assetLocSelect').value = a.loc || "";
-                document.getElementById('assetNotes').value = a.notes || "";
-                document.getElementById('assetWinVer').value = a.winVer || "Windows 10 Pro";
-                document.getElementById('assetRole').value = a.role || "Workstation";
-            } else { 
-                document.querySelectorAll('#assetWizardOverlay input, #assetWizardOverlay textarea').forEach(i => i.value = ""); 
-                if(currentFilter) document.getElementById('assetLocSelect').value = currentFilter;
-            }
+                document.getElementById('assetName').value = a.name; document.getElementById('assetType').value = a.type;
+                document.getElementById('assetSerial').value = a.serial; document.getElementById('assetBrand').value = a.brand;
+                document.getElementById('assetModel').value = a.model; document.getElementById('assetDate').value = a.date;
+                document.getElementById('assetStatus').value = a.status; document.getElementById('assetIP').value = a.ip;
+                document.getElementById('assetLocSelect').value = a.loc; document.getElementById('assetNotes').value = a.notes;
+                document.getElementById('assetWinVer').value = a.winVer; document.getElementById('assetRole').value = a.role;
+            } else { document.querySelectorAll('#assetWizardOverlay input, #assetWizardOverlay textarea').forEach(i => i.value = ""); }
             document.getElementById('assetWizardOverlay').style.display = 'flex';
         }
-
         function closeWizard() { document.getElementById('assetWizardOverlay').style.display = 'none'; }
         
         function saveAsset() {
             const data = {
-                name: document.getElementById('assetName').value,
-                type: document.getElementById('assetType').value,
-                serial: document.getElementById('assetSerial').value,
-                brand: document.getElementById('assetBrand').value,
-                model: document.getElementById('assetModel').value,
-                date: document.getElementById('assetDate').value,
-                winVer: document.getElementById('assetWinVer').value,
-                status: document.getElementById('assetStatus').value,
-                ip: document.getElementById('assetIP').value,
-                loc: document.getElementById('assetLocSelect').value,
-                notes: document.getElementById('assetNotes').value,
-                role: document.getElementById('assetRole').value
+                name: document.getElementById('assetName').value, type: document.getElementById('assetType').value,
+                serial: document.getElementById('assetSerial').value, brand: document.getElementById('assetBrand').value,
+                model: document.getElementById('assetModel').value, date: document.getElementById('assetDate').value,
+                winVer: document.getElementById('assetWinVer').value, status: document.getElementById('assetStatus').value,
+                ip: document.getElementById('assetIP').value, loc: document.getElementById('assetLocSelect').value,
+                notes: document.getElementById('assetNotes').value, role: document.getElementById('assetRole').value
             };
             const idx = parseInt(document.getElementById('editAssetIndex').value);
             if(idx > -1) assets[idx] = data; else assets.push(data);
@@ -724,6 +688,7 @@
             document.getElementById('locModalOverlay').style.display = 'flex';
         }
         function closeLocModal() { document.getElementById('locModalOverlay').style.display = 'none'; }
+        
         function saveLocation() {
             const data = { name: document.getElementById('locName').value, type: document.getElementById('locType').value, code: document.getElementById('locCode').value };
             const idx = document.getElementById('editLocIndex').value;
@@ -731,10 +696,25 @@
             renderAll(); closeLocModal(); triggerSync();
         }
 
+        function filterBySite(n) { 
+            showPage('inventory'); 
+            document.getElementById('siteFilter').value = n;
+            renderAll(); 
+        }
+
+        function logAttendance(type) {
+            const now = new Date();
+            attendance.unshift({
+                date: now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
+                time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                activity: type
+            });
+            renderAll(); triggerSync();
+        }
+
         function toggleMobileField() {
             const type = document.getElementById('myDevType').value.toLowerCase();
-            const group = document.getElementById('mobileNumberGroup');
-            group.style.display = (type.includes('smartphone') || type.includes('phone')) ? 'block' : 'none';
+            document.getElementById('mobileNumberGroup').style.display = (type.includes('phone')) ? 'block' : 'none';
         }
 
         function openAssignModal() { 
@@ -745,20 +725,13 @@
         function closeAssignModal() { document.getElementById('assignModalOverlay').style.display = 'none'; }
         
         function saveMyDevice() {
-            const type = document.getElementById('myDevType').value;
-            const mobile = document.getElementById('myDevMobile').value;
             const dev = {
-                type: type,
-                model: document.getElementById('myDevModel').value,
-                serial: document.getElementById('myDevSerial').value,
-                mobile: (type.toLowerCase().includes('smartphone') || type.toLowerCase().includes('phone')) ? mobile : "",
-                tag: document.getElementById('myDevTag').value,
-                date: document.getElementById('myDevDate').value,
+                type: document.getElementById('myDevType').value, model: document.getElementById('myDevModel').value,
+                serial: document.getElementById('myDevSerial').value, mobile: document.getElementById('myDevMobile').value,
+                tag: document.getElementById('myDevTag').value, date: document.getElementById('myDevDate').value,
                 status: document.getElementById('myDevCondition').value
             };
-            if(!dev.type || !dev.model) { alert("Please enter device details"); return; }
-            myDevices.push(dev);
-            renderAll(); closeAssignModal(); triggerSync();
+            myDevices.push(dev); renderAll(); closeAssignModal(); triggerSync();
         }
 
         function deleteItem(type, i) {
@@ -768,14 +741,13 @@
                 else if(type==='loc') locations.splice(i,1); 
                 else if(type==='myDev') myDevices.splice(i,1);
                 else if(type==='att') attendance.splice(i,1);
-                renderAll();
-                closeConfirm();
-                triggerSync();
+                renderAll(); closeConfirm(); triggerSync();
             };
         }
         function closeConfirm() { document.getElementById('confirmOverlay').style.display = 'none'; }
 
         function renderDashboardVisuals() {
+            // OS Compliance Chart
             const pcAssets = assets.filter(a => a.winVer && a.winVer !== 'N/A');
             const totalPCs = pcAssets.length || 1;
             const osCounts = {
@@ -783,24 +755,21 @@
                 'Windows 10 Pro': pcAssets.filter(a => a.winVer === 'Windows 10 Pro').length,
                 'Windows 7': pcAssets.filter(a => a.winVer === 'Windows 7').length
             };
-
             document.getElementById('os-viz-container').innerHTML = Object.entries(osCounts).map(([os, count]) => {
                 const pct = (count / totalPCs) * 100;
                 return `<div class="progress-group"><div class="progress-label"><span>${os}</span><span>${count} Units</span></div>
                         <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: ${pct}%; background: ${os === 'Windows 7' ? '#ff4757' : '#2ed573'}"></div></div></div>`;
             }).join('');
 
-            const sortedSites = [...locations].map(l => ({
-                name: l.name,
-                count: assets.filter(a => a.loc === l.name).length,
-                healthy: assets.filter(a => a.loc === l.name && a.status === 'Active').length
-            })).sort((a, b) => b.count - a.count).slice(0, 4);
-
-            document.getElementById('site-viz-container').innerHTML = sortedSites.map(s => {
-                const pct = s.count ? (s.healthy / s.count) * 100 : 0;
-                return `<div class="progress-group"><div class="progress-label"><span>${s.name}</span><span>${s.healthy}/${s.count} Healthy</span></div>
-                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: ${pct}%"></div></div></div>`;
-            }).join('') || '<p style="font-size:0.8rem; color:var(--text-muted)">No site data available</p>';
+            // NEW: Device Type Distribution Chart
+            const types = [...new Set(assets.map(a => a.type))];
+            const totalAssets = assets.length || 1;
+            document.getElementById('type-viz-container').innerHTML = types.map(t => {
+                const count = assets.filter(a => a.type === t).length;
+                const pct = (count / totalAssets) * 100;
+                return `<div class="progress-group"><div class="progress-label"><span>${t}</span><span>${count} Units</span></div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: ${pct}%; background: #3498db"></div></div></div>`;
+            }).join('') || '<p style="font-size:0.8rem; color:var(--text-muted)">No asset data available</p>';
         }
 
         function renderAll() {
@@ -808,60 +777,39 @@
             const currentSiteVal = siteFilter.value;
             siteFilter.innerHTML = '<option value="">All Sites</option>' + 
                 locations.map(l => `<option value="${l.name}" ${l.name === currentSiteVal ? 'selected' : ''}>${l.name}</option>`).join('');
-
+            
             const searchVal = document.getElementById('inventorySearch').value.toLowerCase();
-            const selectedSite = siteFilter.value;
-
-            const filteredAssets = assets.filter(a => {
-                const matchesSearch = (a.name+a.serial+a.brand+a.model+(a.type||"")).toLowerCase().includes(searchVal);
-                const matchesSite = selectedSite === "" || a.loc === selectedSite;
-                return matchesSearch && matchesSite;
-            });
+            const filteredAssets = assets.filter(a => (a.name+a.serial+a.brand+a.model).toLowerCase().includes(searchVal) && (siteFilter.value === "" || a.loc === siteFilter.value));
             
             document.getElementById('filtered-count').innerText = filteredAssets.length;
             document.getElementById('grand-total').innerText = assets.length;
-
+            
             document.getElementById('assetTableBody').innerHTML = filteredAssets.map((a, i) => {
                 const globalIndex = assets.indexOf(a);
-                return `<tr><td><strong>${a.name}</strong><br><small style="color:var(--text-muted)">${a.type || 'N/A'}</small></td>
-                    <td>${a.brand} / ${a.model}</td><td>${a.winVer}</td><td><small>${a.serial}</small></td>
+                return `<tr><td><strong>${a.name}</strong></td><td>${a.brand} / ${a.model}</td><td>${a.winVer}</td><td><small>${a.serial}</small></td>
                     <td><span class="status-active">${a.status}</span></td><td><span class="network-pill">${a.ip}</span></td>
                     <td class="clickable-site" onclick="filterBySite('${a.loc}')">${a.loc}</td><td class="notes-cell">${a.notes}</td>
                     <td><div class="action-cell"><button class="btn-icon" onclick="openAssetWizard(${globalIndex})">✎</button>
                     <button class="btn-icon" onclick="deleteItem('asset',${globalIndex})">✖</button></div></td></tr>`}).join('');
-
-            document.getElementById('locationTableBody').innerHTML = locations.map((l, i) => `
-                <tr><td><span class="clickable-site" onclick="filterBySite('${l.name}')">${l.name}</span></td>
-                <td>${l.type}</td><td>${l.code}</td><td><strong>${assets.filter(a=>a.loc===l.name).length}</strong></td>
-                <td><div class="action-cell"><button class="btn-icon" onclick="openLocationModal(${i})">✎</button>
-                <button class="btn-icon" onclick="deleteItem('loc',${i})">✖</button></div></td></tr>`).join('');
-
-            document.getElementById('attendanceTableBody').innerHTML = attendance.map((att, i) => `
-                <tr><td><span contenteditable="true" class="editable-cell" onblur="updateAttendance(${i},'date',this.innerText)">${att.date}</span></td>
-                <td><strong contenteditable="true" class="editable-cell" onblur="updateAttendance(${i},'time',this.innerText)">${att.time}</strong></td>
-                <td><span class="att-badge ${att.activity==='Time In'?'att-in':'att-out'}">${att.activity}</span></td>
-                <td><div class="action-cell"><button class="btn-icon" onclick="deleteItem('att',${i})">✖</button></div></td></tr>`).join('');
             
-            document.getElementById('myDevicesTableBody').innerHTML = myDevices.map((d, i) => {
-                const isPhone = d.type.toLowerCase().includes('smartphone') || d.type.toLowerCase().includes('phone');
-                const displaySerial = (isPhone && d.mobile) ? `${d.serial} / ${d.mobile}` : d.serial;
-                return `<tr><td><strong>${d.type}</strong></td><td>${d.model}</td><td><small>${displaySerial}</small></td>
-                <td><span class="network-pill">${d.tag}</span></td><td>${d.date}</td><td><span class="status-active" style="background:#e3f2fd; color:#1976d2">${d.status}</span></td>
-                <td><div class="action-cell"><button class="btn-icon" onclick="deleteItem('myDev',${i})">✖</button></div></td></tr>`
-            }).join('');
-
+            const locSearch = document.getElementById('locationSearch').value.toLowerCase();
+            const filteredLocs = locations.filter(l => (l.name + l.code).toLowerCase().includes(locSearch));
+            document.getElementById('locationTableBody').innerHTML = filteredLocs.map((l, i) => {
+                const globalIdx = locations.indexOf(l);
+                return `<tr><td class="clickable-site" onclick="filterBySite('${l.name}')">${l.name}</td><td>${l.type}</td><td>${l.code}</td><td>${assets.filter(a=>a.loc===l.name).length}</td>
+                <td><div class="action-cell"><button class="btn-icon" onclick="openLocationModal(${globalIdx})">✎</button>
+                <button class="btn-icon" onclick="deleteItem('loc',${globalIdx})">✖</button></div></td></tr>`}).join('');
+            
+            document.getElementById('attendanceTableBody').innerHTML = attendance.map((att, i) => `<tr><td>${att.date}</td><td>${att.time}</td><td><span class="att-badge ${att.activity==='Time In'?'att-in':'att-out'}">${att.activity}</span></td><td><button class="btn-icon" onclick="deleteItem('att',${i})">✖</button></td></tr>`).join('');
+            document.getElementById('myDevicesTableBody').innerHTML = myDevices.map((d, i) => `<tr><td>${d.type}</td><td>${d.model}</td><td>${d.serial}</td><td>${d.tag}</td><td>${d.date}</td><td>${d.status}</td><td><button class="btn-icon" onclick="deleteItem('myDev',${i})">✖</button></td></tr>`).join('');
+            
             document.getElementById('stat-total-assets').innerText = assets.length;
+            document.getElementById('stat-total-sites').innerText = locations.length;
             document.getElementById('stat-hubs').innerText = locations.filter(l => l.type === 'Hub').length;
             document.getElementById('stat-branches').innerText = locations.filter(l => l.type === 'Branch').length;
-            document.getElementById('stat-total-sites').innerText = locations.length;
             document.getElementById('stat-warning').innerText = assets.filter(a => a.status !== 'Active').length;
-            
             renderDashboardVisuals();
         }
-
-        window.onload = () => {
-            document.body.style.visibility = 'hidden';
-        };
     </script>
 </body>
 </html>
