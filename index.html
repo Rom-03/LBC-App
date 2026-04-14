@@ -125,6 +125,9 @@
         .sidebar-links li:hover { background: rgba(0,0,0,0.02); padding-left: 30px; }
         .sidebar-links li.active { color: var(--lbc-red); background: rgba(227, 26, 44, 0.05); border-left: 4px solid var(--lbc-red); }
 
+        .sidebar-footer-actions { margin-top: auto; border-top: 2px solid var(--border); padding-bottom: 15px; }
+        .sidebar-footer-actions li { border-bottom: none !important; }
+
         .container { max-width: 1300px; margin: 20px auto; padding: 0 15px; }
         .page-section { display: none; }
         .page-section.active { display: block; animation: pageFade 0.4s ease-out; }
@@ -179,6 +182,10 @@
 
         .status-active { background: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 0.75rem; }
         .network-pill { background: var(--light-bg); border: 1px solid var(--border); padding: 4px 8px; border-radius: 6px; font-family: monospace; font-size: 0.8rem; }
+        
+        .att-badge { padding: 4px 10px; border-radius: 6px; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; }
+        .att-in { background: #e8f5e9; color: #2e7d32; }
+        .att-out { background: #fff3e0; color: #ef6c00; }
 
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 2000; justify-content: center; align-items: center; }
         .modal-content { 
@@ -225,6 +232,23 @@
         .btn-confirm { flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; font-size: 0.8rem; }
         .btn-yes { background: var(--lbc-red); color: white; }
         .btn-no { background: var(--light-bg); color: var(--text-main); border: 1px solid var(--border); }
+
+        .btn-icon { background: none; border: none; cursor: pointer; font-size: 1.1rem; opacity: 0.6; transition: 0.2s; padding: 5px; }
+        .btn-icon:hover { opacity: 1; color: var(--lbc-red); }
+        
+        @media print {
+            body * { visibility: hidden; }
+            #printArea, #printArea * { visibility: visible; }
+            #printArea { 
+                position: absolute; 
+                left: 0; 
+                top: 0; 
+                width: 100%; 
+                display: block !important; 
+                padding: 0 !important;
+            }
+            @page { margin: 1cm; size: portrait; }
+        }
 
         @media (max-width: 900px) {
             .nav-links { display: none; }
@@ -301,9 +325,11 @@
             <li id="side-locations" onclick="showPage('locations'); toggleSidebar()">📍 Locations</li>
             <li id="side-my-devices" onclick="showPage('my-devices'); toggleSidebar()">💻 My Devices</li>
             <li id="side-attendance" onclick="showPage('attendance'); toggleSidebar()">🕒 My Attendance</li>
+        </ul>
+        <ul class="sidebar-links sidebar-footer-actions">
             <li onclick="exportData(); toggleSidebar()">💾 Export Backup</li>
             <li onclick="document.getElementById('importFile').click(); toggleSidebar()">📂 Import Data</li>
-            <li onclick="logout(); toggleSidebar()" style="color: var(--lbc-red); border-top: 2px solid var(--border); font-weight: 900; margin-top: auto;">🚪 Logout</li>
+            <li onclick="logout(); toggleSidebar()" style="color: var(--lbc-red); font-weight: 900;">🚪 Logout</li>
         </ul>
     </div>
 
@@ -318,7 +344,6 @@
                     <button class="btn-main" style="background: #747d8c;" onclick="document.getElementById('importFile').click()">IMPORT</button>
                 </div>
             </div>
-            
             <div class="stats-grid">
                 <div class="stat-card"><h3>Total Assets</h3><p id="stat-total-assets">0</p></div>
                 <div class="stat-card"><h3>Hubs</h3><p id="stat-hubs">0</p></div>
@@ -326,7 +351,6 @@
                 <div class="stat-card"><h3>Total Sites</h3><p id="stat-total-sites">0</p></div>
                 <div class="stat-card"><h3>Maintenance</h3><p id="stat-warning" style="color:var(--lbc-red)">0</p></div>
             </div>
-
             <div class="dash-visuals">
                 <div class="viz-card">
                     <h4>OS Version Compliance</h4>
@@ -422,6 +446,7 @@
                 <div style="display: flex; gap: 10px; width: 100%;">
                     <button class="btn-main" style="background: #2e7d32;" onclick="logAttendance('Time In')">TIME IN</button>
                     <button class="btn-main" style="background: #ef6c00;" onclick="logAttendance('Time Out')">TIME OUT</button>
+                    <button class="btn-main" style="background: var(--primary);" onclick="openPrintModal()">PRINT REPORT</button>
                 </div>
             </div>
             <div class="table-card">
@@ -431,6 +456,36 @@
                 </table>
             </div>
         </section>
+    </div>
+
+    <div class="modal-overlay" id="printModalOverlay">
+        <div class="modal-content" style="height: auto; max-width: 400px;">
+            <div class="modal-header"><h3>Select Attendance Range</h3></div>
+            <div class="wizard-body">
+                <div class="form-group"><label>From Date</label><input type="date" id="printFromDate"></div>
+                <div class="form-group"><label>To Date</label><input type="date" id="printToDate"></div>
+            </div>
+            <div class="wizard-footer">
+                <button class="btn-wiz btn-cancel" onclick="closePrintModal()">CANCEL</button>
+                <button class="btn-wiz btn-submit" onclick="generatePrint()">GENERATE PRINT</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="attEditModalOverlay">
+        <div class="modal-content" style="height: auto; max-width: 400px;">
+            <div class="modal-header"><h3>Edit Record</h3></div>
+            <div class="wizard-body">
+                <input type="hidden" id="editAttIndex">
+                <div class="form-group"><label>Date</label><input type="date" id="editAttDate"></div>
+                <div class="form-group"><label>Time</label><input type="time" id="editAttTime"></div>
+                <div class="form-group"><label>Activity</label><select id="editAttActivity"><option value="Time In">Time In</option><option value="Time Out">Time Out</option></select></div>
+            </div>
+            <div class="wizard-footer">
+                <button class="btn-wiz btn-cancel" onclick="closeAttEditModal()">CANCEL</button>
+                <button class="btn-wiz btn-submit" onclick="saveAttEdit()">SAVE CHANGES</button>
+            </div>
+        </div>
     </div>
 
     <div class="modal-overlay" id="assetWizardOverlay">
@@ -525,6 +580,7 @@
         </div>
     </div>
 
+    <div id="printArea"></div>
     <input type="file" id="importFile" style="display: none;" onchange="importData(event)">
 
     <script>
@@ -536,7 +592,6 @@
         let myDevices = [];
         let syncTimer;
 
-        // AUTHENTICATION & SESSION PERSISTENCE
         function checkPin() {
             if(document.getElementById('pinInput').value === "1122") {
                 localStorage.setItem('lbc_session', 'true');
@@ -571,7 +626,6 @@
             }
         };
 
-        // UI & NAVIGATION
         function toggleTheme() {
             const current = document.body.getAttribute('data-theme');
             const target = current === 'light' ? 'dark' : 'light';
@@ -593,7 +647,105 @@
             renderAll();
         }
 
-        // DATA LOGIC
+        function openPrintModal() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const todayStr = `${year}-${month}-${day}`;
+            
+            document.getElementById('printFromDate').value = todayStr;
+            document.getElementById('printToDate').value = todayStr;
+            document.getElementById('printModalOverlay').style.display = 'flex';
+        }
+
+        function closePrintModal() { document.getElementById('printModalOverlay').style.display = 'none'; }
+
+        function generatePrint() {
+            const fromStr = document.getElementById('printFromDate').value;
+            const toStr = document.getElementById('printToDate').value;
+            
+            if (!fromStr || !toStr) { alert("Please select dates"); return; }
+
+            const fromDate = new Date(fromStr);
+            const toDate = new Date(toStr);
+            fromDate.setHours(0,0,0,0);
+            toDate.setHours(23,59,59,999);
+
+            const dateMap = {};
+            attendance.forEach(item => {
+                const itemDateObj = new Date(item.date);
+                if (itemDateObj >= fromDate && itemDateObj <= toDate) {
+                    if (!dateMap[item.date]) dateMap[item.date] = { timeIn: "", timeOut: "" };
+                    if (item.activity === 'Time In') dateMap[item.date].timeIn = item.time;
+                    if (item.activity === 'Time Out') dateMap[item.date].timeOut = item.time;
+                }
+            });
+
+            const sortedDates = Object.keys(dateMap).sort((a,b) => new Date(a) - new Date(b));
+
+            if (sortedDates.length === 0) {
+                alert("No records found for this range.");
+                return;
+            }
+
+            let html = `
+                <div style="font-family: 'Segoe UI', sans-serif; padding: 20px; color: #333; background: white; width: 100%; box-sizing: border-box; overflow: hidden;">
+                    <div style="text-align: center; border-bottom: 3px solid #e31a2c; padding-bottom: 15px; margin-bottom: 25px;">
+                        <h1 style="color: #e31a2c; margin: 0; font-size: 22px; font-weight: 900; letter-spacing: 1px;">LBC IT FIELD OPERATIONS</h1>
+                        <p style="margin: 5px 0; font-weight: bold; color: #666; letter-spacing: 2px; font-size: 11px;">OFFICIAL ATTENDANCE REPORT</p>
+                        <p style="margin: 0; font-size: 10px;">Period: ${new Date(fromStr).toLocaleDateString()} - ${new Date(toStr).toLocaleDateString()}</p>
+                    </div>
+                    <div style="margin-bottom: 20px; display: flex; justify-content: space-between; font-size: 11px;">
+                        <div style="flex: 1;">
+                            <p style="margin: 2px 0;"><strong>Employee:</strong> Jerome D. Anos</p>
+                            <p style="margin: 2px 0;"><strong>ID Number:</strong> 138178</p>
+                        </div>
+                        <div style="text-align: right; flex: 1;">
+                            <p style="margin: 2px 0;"><strong>Dept:</strong> Information Technology</p>
+                            <p style="margin: 2px 0;"><strong>Generated:</strong> ${new Date().toLocaleString()}</p>
+                        </div>
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse; table-layout: auto;">
+                        <thead>
+                            <tr style="background: #f2f2f2;">
+                                <th style="border: 1px solid #ccc; padding: 12px 8px; text-align: left; font-size: 11px; text-transform: uppercase;">Date</th>
+                                <th style="border: 1px solid #ccc; padding: 12px 8px; text-align: center; font-size: 11px; text-transform: uppercase;">Time In</th>
+                                <th style="border: 1px solid #ccc; padding: 12px 8px; text-align: center; font-size: 11px; text-transform: uppercase;">Time Out</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${sortedDates.map(date => `
+                                <tr>
+                                    <td style="border: 1px solid #ccc; padding: 10px 8px; font-size: 11px; white-space: nowrap;">${date}</td>
+                                    <td style="border: 1px solid #ccc; padding: 10px 8px; text-align: center; font-weight: bold; color: #2e7d32; font-size: 11px;">${dateMap[date].timeIn || '--:--'}</td>
+                                    <td style="border: 1px solid #ccc; padding: 10px 8px; text-align: center; font-weight: bold; color: #ef6c00; font-size: 11px;">${dateMap[date].timeOut || '--:--'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    <div style="margin-top: 60px; display: flex; justify-content: space-between;">
+                        <div style="text-align: center; width: 40%;">
+                            <div style="border-bottom: 1px solid #333; height: 30px;"></div>
+                            <p style="margin-top: 5px; font-size: 9px; font-weight: bold;">SIGNATURE OVER PRINTED NAME</p>
+                        </div>
+                        <div style="text-align: center; width: 40%;">
+                            <div style="border-bottom: 1px solid #333; height: 30px;"></div>
+                            <p style="margin-top: 5px; font-size: 9px; font-weight: bold;">SUPERVISOR SIGNATURE</p>
+                        </div>
+                    </div>
+                    <div style="margin-top: 40px; text-align: center; font-size: 8px; color: #999;">
+                        <p>This is a computer-generated report from LBC Field Tracker Online.</p>
+                    </div>
+                </div>
+            `;
+
+            const printArea = document.getElementById('printArea');
+            printArea.innerHTML = html;
+            closePrintModal();
+            window.print();
+        }
+
         async function fetchOnlineData() {
             const alertTag = document.getElementById('syncAlert');
             if(alertTag) { alertTag.style.display = "inline"; alertTag.innerText = "⌛ LOADING..."; }
@@ -645,7 +797,6 @@
             reader.readAsText(file);
         }
 
-        // RENDERING & ACTIONS
         function jumpTo(id) { document.getElementById('wizardBody').scrollTo({ top: document.getElementById(id).offsetTop - 100, behavior: 'smooth' }); }
         
         function openAssetWizard(idx = -1) {
@@ -706,10 +857,46 @@
             const now = new Date();
             attendance.unshift({
                 date: now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
-                time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
                 activity: type
             });
             renderAll(); triggerSync();
+        }
+
+        function openAttEditModal(idx) {
+            const att = attendance[idx];
+            document.getElementById('editAttIndex').value = idx;
+            
+            const dateObj = new Date(att.date);
+            const y = dateObj.getFullYear();
+            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const d = String(dateObj.getDate()).padStart(2, '0');
+            
+            document.getElementById('editAttDate').value = `${y}-${m}-${d}`;
+            document.getElementById('editAttTime').value = att.time;
+            document.getElementById('editAttActivity').value = att.activity;
+            document.getElementById('attEditModalOverlay').style.display = 'flex';
+        }
+
+        function closeAttEditModal() { document.getElementById('attEditModalOverlay').style.display = 'none'; }
+
+        function saveAttEdit() {
+            const idx = document.getElementById('editAttIndex').value;
+            const rawDate = document.getElementById('editAttDate').value;
+            const time = document.getElementById('editAttTime').value;
+            const activity = document.getElementById('editAttActivity').value;
+
+            if (!rawDate || !time) return;
+
+            attendance[idx] = {
+                date: new Date(rawDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
+                time: time,
+                activity: activity
+            };
+
+            renderAll();
+            closeAttEditModal();
+            triggerSync();
         }
 
         function toggleMobileField() {
@@ -747,7 +934,6 @@
         function closeConfirm() { document.getElementById('confirmOverlay').style.display = 'none'; }
 
         function renderDashboardVisuals() {
-            // OS Compliance Chart
             const pcAssets = assets.filter(a => a.winVer && a.winVer !== 'N/A');
             const totalPCs = pcAssets.length || 1;
             const osCounts = {
@@ -761,7 +947,6 @@
                         <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: ${pct}%; background: ${os === 'Windows 7' ? '#ff4757' : '#2ed573'}"></div></div></div>`;
             }).join('');
 
-            // NEW: Device Type Distribution Chart
             const types = [...new Set(assets.map(a => a.type))];
             const totalAssets = assets.length || 1;
             document.getElementById('type-viz-container').innerHTML = types.map(t => {
@@ -800,7 +985,15 @@
                 <td><div class="action-cell"><button class="btn-icon" onclick="openLocationModal(${globalIdx})">✎</button>
                 <button class="btn-icon" onclick="deleteItem('loc',${globalIdx})">✖</button></div></td></tr>`}).join('');
             
-            document.getElementById('attendanceTableBody').innerHTML = attendance.map((att, i) => `<tr><td>${att.date}</td><td>${att.time}</td><td><span class="att-badge ${att.activity==='Time In'?'att-in':'att-out'}">${att.activity}</span></td><td><button class="btn-icon" onclick="deleteItem('att',${i})">✖</button></td></tr>`).join('');
+            const attSearch = document.getElementById('attendanceSearch').value.toLowerCase();
+            const filteredAtt = attendance.filter(att => att.date.toLowerCase().includes(attSearch));
+            document.getElementById('attendanceTableBody').innerHTML = filteredAtt.map((att, i) => {
+                const globalIdx = attendance.indexOf(att);
+                return `<tr><td>${att.date}</td><td>${att.time}</td><td><span class="att-badge ${att.activity==='Time In'?'att-in':'att-out'}">${att.activity}</span></td>
+                <td><div class="action-cell"><button class="btn-icon" onclick="openAttEditModal(${globalIdx})">✎</button>
+                <button class="btn-icon" onclick="deleteItem('att',${globalIdx})">✖</button></div></td></tr>`
+            }).join('');
+
             document.getElementById('myDevicesTableBody').innerHTML = myDevices.map((d, i) => `<tr><td>${d.type}</td><td>${d.model}</td><td>${d.serial}</td><td>${d.tag}</td><td>${d.date}</td><td>${d.status}</td><td><button class="btn-icon" onclick="deleteItem('myDev',${i})">✖</button></td></tr>`).join('');
             
             document.getElementById('stat-total-assets').innerText = assets.length;
